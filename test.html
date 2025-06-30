@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chrome Extension Test Page</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            line-height: 1.6;
+            color: #333;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+        }
+        .highlight-demo {
+            background-color: #f9fafb;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        .instructions {
+            background-color: #fef3c7;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        h1, h2 {
+            margin-bottom: 15px;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        .code {
+            background-color: #1f2937;
+            color: #f9fafb;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 13px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎯 Replit Highlighter Test Page</h1>
+        <p>Use this page to test your Chrome extension highlighting functionality</p>
+    </div>
+
+    <div class="instructions">
+        <h2>📋 Testing Instructions</h2>
+        <ol>
+            <li>Open Chrome and go to <strong>chrome://extensions/</strong></li>
+            <li>Turn on <strong>"Developer mode"</strong> in the top right</li>
+            <li>Click <strong>"Load unpacked"</strong> and select your extension folder</li>
+            <li>Come back to this page and try selecting text below</li>
+            <li>Click the extension icon in your toolbar to see saved highlights</li>
+        </ol>
+    </div>
+
+    <div class="section">
+        <h2>Sample Text for Highlighting</h2>
+        <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+            Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+        </p>
+        <p>
+            <strong>Try highlighting this important sentence:</strong> Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
+            Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        </p>
+    </div>
+
+    <div class="highlight-demo">
+        <h2>Technical Documentation Sample</h2>
+        <p>
+            Chrome extensions are small software programs that customize the browsing experience. They enable users to tailor Chrome functionality 
+            and behavior to individual needs or preferences. Extensions are built on web technologies such as HTML, CSS, and JavaScript.
+        </p>
+        <p>
+            The extension system in Chrome uses a manifest file to define permissions, content scripts, and popup interfaces. 
+            Content scripts run in the context of web pages and can read and modify the DOM, while popup scripts provide user interface elements.
+        </p>
+    </div>
+
+    <div class="section">
+        <h2>Features to Test</h2>
+        <ul>
+            <li><strong>Text Selection:</strong> Select any text on this page - it should automatically get highlighted</li>
+            <li><strong>Visual Highlight:</strong> Selected text should appear with a yellow background</li>
+            <li><strong>Click to Remove:</strong> Click on highlighted text to remove the highlight</li>
+            <li><strong>Popup Interface:</strong> Click the extension icon to see all your saved highlights</li>
+            <li><strong>Search:</strong> Use the search box in the popup to find specific highlights</li>
+            <li><strong>Export:</strong> Try exporting your highlights as a JSON file</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>Extension File Structure</h2>
+        <div class="code">
+chrome-extension/
+├── manifest.json       # Extension configuration
+├── content.js         # Handles text highlighting
+├── popup.html         # Popup interface
+├── popup.js          # Popup functionality  
+├── styles.css        # Popup styling
+└── icon.svg          # Extension icon
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Troubleshooting</h2>
+        <p>If the extension isn't working:</p>
+        <ul>
+            <li>Check the Chrome console for errors (F12 → Console)</li>
+            <li>Verify the extension is enabled in chrome://extensions/</li>
+            <li>Try refreshing this page after loading the extension</li>
+            <li>Make sure all files are in the same folder</li>
+        </ul>
+    </div>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Replit Highlighter</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="title">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="m9 11 3 3 8-8"></path>
+                    <path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9c1.18 0 2.3.23 3.32.64"></path>
+                </svg>
+                Highlighter
+            </h1>
+            <div class="stats">
+                <span id="highlight-count">0 highlights</span>
+            </div>
+        </header>
+
+        <div class="controls">
+            <button id="clear-all-btn" class="btn btn-danger" title="Clear all highlights">
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3,6 5,6 21,6"></polyline>
+                    <path d="m19,6v14a2,2 0 0,1-2,2H7a2,2 0 0,1-2-2V6m3,0V4a2,2 0 0,1,2-2h4a2,2 0 0,1,2,2v2"></path>
+                </svg>
+                Clear All
+            </button>
+            <button id="export-btn" class="btn btn-secondary" title="Export highlights">
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7,10 12,15 17,10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                Export
+            </button>
+        </div>
+
+        <div class="search-container">
+            <input type="text" id="search-input" class="search-input" placeholder="Search highlights...">
+            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+            </svg>
+        </div>
+
+        <div class="highlights-container">
+            <div id="highlights-list" class="highlights-list">
+                <!-- Highlights will be populated here -->
+            </div>
+            
+            <div id="empty-state" class="empty-state">
+                <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="m3 16 4 4 4-4"></path>
+                    <path d="M7 20V4"></path>
+                    <path d="M20 8c0 2.5-2 4.5-4 4.5s-4-2-4-4.5 2-4.5 4-4.5 4 2 4 4.5Z"></path>
+                    <path d="M15 10 7 18"></path>
+                </svg>
+                <h3>No highlights yet</h3>
+                <p>Select text on any webpage to create your first highlight!</p>
+            </div>
+
+            <div id="no-results" class="empty-state" style="display: none;">
+                <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                </svg>
+                <h3>No matching highlights</h3>
+                <p>Try adjusting your search terms.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html>
