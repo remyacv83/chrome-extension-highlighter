@@ -150,9 +150,22 @@
                 showDefinition(text, e.pageX, e.pageY);
             });
             
-            // Wrap the selected content
+            // Safe highlighting approach that preserves text
+            if (range.collapsed) {
+                return; // No text selected
+            }
+            
+            // Check if we can safely surround the contents
             try {
+                // First remove the tooltip since surroundContents doesn't work with it
+                highlightSpan.removeChild(tooltip);
+                
+                // Try to surround the contents
                 range.surroundContents(highlightSpan);
+                
+                // Add tooltip back after surrounding
+                highlightSpan.appendChild(tooltip);
+                
                 selection.removeAllRanges();
                 
                 // Save highlight to storage
@@ -166,9 +179,50 @@
                 });
                 
             } catch (error) {
-                console.error('Error creating highlight:', error);
-                // Fallback: try to extract and highlight
-                extractAndHighlight(range, highlightSpan, highlightId, text);
+                console.error('Cannot highlight across multiple elements:', error);
+                
+                // Create a safer fallback that doesn't cut text
+                const startContainer = range.startContainer;
+                const endContainer = range.endContainer;
+                
+                // Only highlight if it's within the same text node
+                if (startContainer === endContainer && startContainer.nodeType === Node.TEXT_NODE) {
+                    const textNode = startContainer;
+                    const parent = textNode.parentNode;
+                    
+                    // Split the text node and wrap the middle part
+                    const beforeText = textNode.textContent.substring(0, range.startOffset);
+                    const selectedText = textNode.textContent.substring(range.startOffset, range.endOffset);
+                    const afterText = textNode.textContent.substring(range.endOffset);
+                    
+                    // Create new text nodes
+                    const beforeNode = document.createTextNode(beforeText);
+                    const afterNode = document.createTextNode(afterText);
+                    
+                    // Set the highlight content
+                    highlightSpan.textContent = selectedText;
+                    highlightSpan.appendChild(tooltip);
+                    
+                    // Replace the original text node
+                    parent.insertBefore(beforeNode, textNode);
+                    parent.insertBefore(highlightSpan, textNode);
+                    parent.insertBefore(afterNode, textNode);
+                    parent.removeChild(textNode);
+                    
+                    selection.removeAllRanges();
+                    
+                    // Save highlight to storage
+                    saveHighlight({
+                        id: highlightId,
+                        text: text,
+                        url: window.location.href,
+                        title: document.title,
+                        timestamp: Date.now(),
+                        xpath: getXPath(highlightSpan)
+                    });
+                } else {
+                    console.log('Cannot highlight text that spans multiple elements');
+                }
             }
             
         } catch (error) {
