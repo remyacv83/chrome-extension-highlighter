@@ -373,6 +373,66 @@ body {
     background: #94a3b8;
 }
 
+/* Settings Panel */
+.settings-panel {
+    padding: 16px 20px;
+    border-bottom: 1px solid #e5e7eb;
+    background-color: #f8fafc;
+}
+
+.settings-panel h3 {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+}
+
+.setting-group {
+    margin-bottom: 12px;
+}
+
+.setting-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: #6b7280;
+    margin-bottom: 4px;
+}
+
+.api-key-input {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    font-size: 12px;
+    margin-bottom: 8px;
+}
+
+.api-key-input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+}
+
+.setting-info {
+    font-size: 11px;
+    color: #6b7280;
+    line-height: 1.4;
+}
+
+.setting-info p {
+    margin: 4px 0;
+}
+
+.setting-info a {
+    color: #667eea;
+    text-decoration: none;
+}
+
+.setting-info a:hover {
+    text-decoration: underline;
+}
+
 /* Responsive adjustments */
 @media (max-height: 500px) {
     .empty-state {

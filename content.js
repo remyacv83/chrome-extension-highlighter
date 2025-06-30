@@ -6,6 +6,9 @@
     const HIGHLIGHT_CLASS = 'replit-highlight';
     const HIGHLIGHT_COLOR = '#ffeb3b';
     const HIGHLIGHT_ID_PREFIX = 'highlight-';
+    
+    // AI definition cache
+    const definitionCache = new Map();
 
     // Initialize extension
     init();
@@ -20,6 +23,10 @@
         // Set up event listeners
         document.addEventListener('mouseup', handleTextSelection);
         document.addEventListener('keydown', handleKeyPress);
+        document.addEventListener('contextmenu', handleContextMenu);
+        
+        // Listen for messages from background script
+        chrome.runtime.onMessage.addListener(handleMessage);
     }
 
     function addHighlightStyles() {
@@ -54,6 +61,42 @@
             }
             .${HIGHLIGHT_CLASS}:hover .highlight-tooltip {
                 opacity: 1;
+            }
+            .definition-popup {
+                position: absolute;
+                background: #ffffff;
+                border: 2px solid #667eea;
+                border-radius: 8px;
+                padding: 12px;
+                max-width: 300px;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+                z-index: 10001;
+                font-size: 14px;
+                line-height: 1.4;
+                color: #333;
+            }
+            .definition-header {
+                font-weight: bold;
+                color: #667eea;
+                margin-bottom: 6px;
+                font-size: 13px;
+            }
+            .definition-text {
+                margin-bottom: 8px;
+            }
+            .definition-close {
+                position: absolute;
+                top: 4px;
+                right: 8px;
+                background: none;
+                border: none;
+                font-size: 16px;
+                cursor: pointer;
+                color: #999;
+            }
+            .definition-loading {
+                color: #667eea;
+                font-style: italic;
             }
         `;
         document.head.appendChild(style);
@@ -90,14 +133,21 @@
             // Add tooltip
             const tooltip = document.createElement('div');
             tooltip.className = 'highlight-tooltip';
-            tooltip.textContent = 'Click to remove';
+            tooltip.textContent = 'Click to remove • Double-click for definition';
             highlightSpan.appendChild(tooltip);
             
-            // Add click handler for removal
+            // Add click handlers
             highlightSpan.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
                 removeHighlight(this);
+            });
+            
+            // Add double-click handler for definition
+            highlightSpan.addEventListener('dblclick', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                showDefinition(text, e.pageX, e.pageY);
             });
             
             // Wrap the selected content
@@ -272,6 +322,102 @@
         } catch (error) {
             console.error('Error in restoreHighlight:', error);
         }
+    }
+
+    // AI Definition Functions
+    function handleContextMenu(event) {
+        // Store context menu position for potential definition popup
+        window.lastContextMenuX = event.pageX;
+        window.lastContextMenuY = event.pageY;
+    }
+
+    function handleMessage(request, sender, sendResponse) {
+        if (request.action === 'getDefinition') {
+            showDefinition(request.text, window.lastContextMenuX || 0, window.lastContextMenuY || 0);
+            return true;
+        }
+    }
+
+    async function showDefinition(text, x, y) {
+        // Remove any existing definition popup
+        const existingPopup = document.querySelector('.definition-popup');
+        if (existingPopup) {
+            existingPopup.remove();
+        }
+
+        // Create definition popup
+        const popup = document.createElement('div');
+        popup.className = 'definition-popup';
+        popup.style.left = x + 'px';
+        popup.style.top = (y - 100) + 'px';
+
+        // Add content
+        popup.innerHTML = `
+            <button class="definition-close" onclick="this.parentElement.remove()">×</button>
+            <div class="definition-header">Definition of "${text}"</div>
+            <div class="definition-text definition-loading">Getting definition...</div>
+        `;
+
+        document.body.appendChild(popup);
+
+        // Position popup to stay within viewport
+        const rect = popup.getBoundingClientRect();
+        if (rect.right > window.innerWidth) {
+            popup.style.left = (x - rect.width) + 'px';
+        }
+        if (rect.top < 0) {
+            popup.style.top = (y + 20) + 'px';
+        }
+
+        try {
+            const definition = await getDefinition(text);
+            const definitionTextElement = popup.querySelector('.definition-text');
+            if (definitionTextElement) {
+                definitionTextElement.textContent = definition;
+                definitionTextElement.classList.remove('definition-loading');
+            }
+        } catch (error) {
+            const definitionTextElement = popup.querySelector('.definition-text');
+            if (definitionTextElement) {
+                definitionTextElement.textContent = 'Sorry, could not get definition. Please try again.';
+                definitionTextElement.classList.remove('definition-loading');
+                definitionTextElement.style.color = '#dc2626';
+            }
+        }
+
+        // Auto-close after 10 seconds
+        setTimeout(() => {
+            if (popup.parentElement) {
+                popup.remove();
+            }
+        }, 10000);
+    }
+
+    async function getDefinition(text) {
+        const cacheKey = text.toLowerCase().trim();
+        
+        // Check cache first
+        if (definitionCache.has(cacheKey)) {
+            return definitionCache.get(cacheKey);
+        }
+
+        // Send message to background script to handle API call
+        return new Promise((resolve, reject) => {
+            chrome.runtime.sendMessage({
+                action: 'fetchDefinition',
+                text: text
+            }, response => {
+                if (chrome.runtime.lastError) {
+                    reject(new Error(chrome.runtime.lastError.message));
+                } else if (response.success) {
+                    // Cache the result
+                    definitionCache.set(cacheKey, response.definition);
+                    resolve(response.definition);
+                } else {
+                    reject(new Error(response.error));
+                }
+            });
+        });
     }
 
 })();

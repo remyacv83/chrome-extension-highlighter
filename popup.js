@@ -10,6 +10,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('search-input');
     const clearAllBtn = document.getElementById('clear-all-btn');
     const exportBtn = document.getElementById('export-btn');
+    const settingsBtn = document.getElementById('settings-btn');
+    const settingsPanel = document.getElementById('settings-panel');
+    const apiKeyInput = document.getElementById('api-key-input');
+    const saveApiKeyBtn = document.getElementById('save-api-key');
 
     // State
     let allHighlights = [];
@@ -20,6 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function init() {
         loadHighlights();
+        loadApiKey();
         setupEventListeners();
     }
 
@@ -32,6 +37,12 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Export highlights
         exportBtn.addEventListener('click', handleExport);
+        
+        // Settings panel
+        settingsBtn.addEventListener('click', toggleSettings);
+        
+        // API key management
+        saveApiKeyBtn.addEventListener('click', saveApiKey);
     }
 
     function loadHighlights() {
@@ -319,5 +330,41 @@ document.addEventListener('DOMContentLoaded', function() {
                 <p>${escapeHtml(message)}</p>
             </div>
         `;
+    }
+
+    // AI Settings Functions
+    function toggleSettings() {
+        const isVisible = settingsPanel.style.display !== 'none';
+        settingsPanel.style.display = isVisible ? 'none' : 'block';
+    }
+
+    function loadApiKey() {
+        chrome.storage.local.get(['openai_api_key'], function(result) {
+            if (result.openai_api_key) {
+                apiKeyInput.value = result.openai_api_key;
+            }
+        });
+    }
+
+    function saveApiKey() {
+        const apiKey = apiKeyInput.value.trim();
+        if (!apiKey) {
+            showToast('Please enter an API key', 'warning');
+            return;
+        }
+
+        if (!apiKey.startsWith('sk-')) {
+            showToast('Invalid API key format', 'error');
+            return;
+        }
+
+        chrome.storage.local.set({ openai_api_key: apiKey }, function() {
+            if (chrome.runtime.lastError) {
+                showToast('Failed to save API key', 'error');
+            } else {
+                showToast('API key saved successfully!');
+                settingsPanel.style.display = 'none';
+            }
+        });
     }
 });

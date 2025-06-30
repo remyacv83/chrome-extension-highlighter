@@ -3,7 +3,7 @@
   "name": "Replit Highlighter",
   "version": "1.0",
   "description": "Highlight and save text locally",
-  "permissions": ["storage", "activeTab", "scripting"],
+  "permissions": ["storage", "activeTab", "scripting", "contextMenus"],
   "action": {
     "default_popup": "popup.html",
     "default_icon": "icon.svg"
@@ -13,5 +13,8 @@
     "js": ["content.js"],
     "css": []
   }],
+  "background": {
+    "service_worker": "background.js"
+  },
   "host_permissions": ["<all_urls>"]
 }
